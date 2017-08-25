@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selectedContactItem"
+    android:orientation="horizontal"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp">
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/contactImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/avatar_placeholder"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/contactName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/colorBaseText"
+                android:textSize="12sp"
+                tools:text="Tú"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/contactDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-26dp"
+            android:layout_marginStart="-26dp"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/circled_delete_icon"
+            android:gravity="center"
+            android:padding="2dp"
+            android:src="@drawable/ic_clear"
+            android:visibility="visible"
+            tools:ignore="ContentDescription" />
+
+</LinearLayout>
