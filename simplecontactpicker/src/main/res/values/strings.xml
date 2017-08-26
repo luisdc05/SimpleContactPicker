@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SimpleContactPicker</string>
+    <string name="search">Buscar</string>
 </resources>
