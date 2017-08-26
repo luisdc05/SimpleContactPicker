@@ -4,15 +4,12 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.util.MutableBoolean
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
-import com.luisdc05.simplecontactpicker.model.AndroidContact
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
-import java.util.AbstractMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -76,6 +73,10 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         updateAdapters(contact, true)
     }
 
+    fun getSelectedContacts(): ArrayList<ContactBase> {
+        return selectedContacts
+    }
+
     private fun updateAdapters(contact: ContactBase, removed: Boolean) {
         val item = filteredContacts.firstOrNull { it.first.number == contact.number }
         if (removed) {
@@ -89,7 +90,6 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         contactsAdapter!!.notifyDataSetChanged()
         selectedContactsAdapter!!.notifyDataSetChanged()
     }
-
 
     private fun checkIfSelected(contact: ContactBase): Boolean {
         return selectedContacts.any { it.number ==  contact.number}
