@@ -26,12 +26,12 @@ class ContactsAdapter(private val list: ArrayList<Pair<ContactBase, AtomicBoolea
         val item = list[position]
 
         holder!!.name.text = item.first.name
-        holder.number.text = item.first.number
+        holder.number.text = item.first.mobileNumber
         holder.type.text = item.first.numberType
         if (item.second.get()) {
             holder.selected.visibility = View.VISIBLE
         } else {
-            holder.selected.visibility = View.GONE
+            holder.selected.visibility = View.INVISIBLE
         }
 
         holder.container.setOnClickListener {

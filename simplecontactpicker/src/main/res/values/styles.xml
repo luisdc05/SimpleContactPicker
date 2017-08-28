@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SelectedContact">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">@dimen/selected_contact_size</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/item_padding</item>
+        <item name="android:paddingTop">@dimen/item_padding</item>
+    </style>
+
+    <style name="SelectedContact.Avatar" parent="">
+        <item name="android:layout_width">@dimen/avatar_size</item>
+        <item name="android:layout_height">@dimen/avatar_size</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:src">@drawable/avatar_placeholder</item>
+    </style>
+
+    <style name="SelectedContact.Indicator" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/circled_delete_icon</item>
+        <item name="android:layout_toRightOf">@id/contactImage</item>
+        <item name="android:layout_alignBottom">@id/contactImage</item>
+        <item name="android:layout_marginLeft">@dimen/icon_offset</item>
+        <item name="android:src">@drawable/ic_clear</item>
+    </style>
+
+    <style name="SelectedContact.Name" parent="android:Widget.TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/name_margin_top</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/colorBaseText</item>
+        <item name="android:textSize">@dimen/selected_contact_name</item>
+    </style>
+
+    <style name="Contact">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/item_padding</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Contact.Avatar" parent="">
+        <item name="android:layout_width">@dimen/avatar_size</item>
+        <item name="android:layout_height">@dimen/avatar_size</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:src">@drawable/avatar_placeholder</item>
+    </style>
+
+    <style name="Contact.Indicator" parent="">
+        <item name="android:layout_width">@dimen/selected_indicator_size</item>
+        <item name="android:layout_height">@dimen/selected_indicator_size</item>
+        <item name="android:layout_toRightOf">@id/contactImage</item>
+        <item name="android:layout_alignBottom">@id/contactImage</item>
+        <item name="android:layout_marginLeft">@dimen/icon_offset</item>
+        <item name="android:src">@drawable/ic_checkmark</item>
+        <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="Contact.Name" parent="android:Widget.TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/colorBaseText</item>
+        <item name="android:textSize">@dimen/contact_name</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>
