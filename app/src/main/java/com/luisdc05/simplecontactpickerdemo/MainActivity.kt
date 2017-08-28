@@ -13,10 +13,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val contactPicker = findViewById<SimpleContactPicker>(R.id.picker)
+        val selected = arrayOf("6641195415")
+        contactPicker.preselectedNumbers = selected
+        contactPicker.loadContacts()
 
         val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            Log.d("MAIN", contactPicker.getSelectedContacts().size.toString())
+            Log.d("MAIN", contactPicker.selectedContacts.size.toString())
         }
     }
 }
