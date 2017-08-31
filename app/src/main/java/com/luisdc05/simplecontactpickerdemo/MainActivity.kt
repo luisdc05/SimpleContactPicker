@@ -14,7 +14,9 @@ class MainActivity : AppCompatActivity() {
 
         val contactPicker = findViewById<SimpleContactPicker>(R.id.picker)
         val selected = arrayOf("6641195415")
+        val hidden = arrayOf("6643683773")
         contactPicker.preselectedNumbers = selected
+        contactPicker.hidden = hidden
         contactPicker.loadContacts()
 
         val button = findViewById<Button>(R.id.button)
