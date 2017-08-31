@@ -30,6 +30,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         private set
     private var filteredContacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var preselectedNumbers: Array<String>? = null
+    var hidden: Array<String>? = null
 
     private lateinit var contactsRecyclerView: RecyclerView
     private lateinit var selectedContactsRecyclerView: RecyclerView
@@ -155,6 +156,13 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         }
     }
 
+    private fun hideContacts() {
+        hidden?.forEach { number ->
+            val toDelete = contacts.firstOrNull { number == it.first.numberOnly }
+            if (toDelete != null) contacts.remove(toDelete)
+        }
+    }
+
     /**
      * Filters the contacts with the given criteria if it matches the name or the number of the contact
      */
@@ -189,6 +197,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         }
 
         preSelectContacts()
+        hideContacts()
 
         filteredContacts.addAll(contacts)
 
