@@ -9,9 +9,9 @@ SimpleContactPicker is a library that lets shows a view that loads and allows th
 - Preselect contacts
 - Hide contacts
 
-<img src="images/pic1.png">
-<img src="images/pic2.png">
-<img src="images/pic3.png">
+<img src="images/pic1.png" height="500px">
+<img src="images/pic2.png" height="500px">
+<img src="images/pic3.png" height="500px">
 
 #### Todos
 
