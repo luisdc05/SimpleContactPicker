@@ -9,6 +9,10 @@ SimpleContactPicker is a library that lets shows a view that loads and allows th
 - Preselect contacts
 - Hide contacts
 
+<img src="images/pic1.png">
+<img src="images/pic2.png">
+<img src="images/pic3.png">
+
 #### Todos
 
 - Allow for custom contacts to be injected (this can be useful if contacts come from a backend)
