@@ -1,6 +1,7 @@
 package com.luisdc05.simplecontactpicker
 
 import android.content.Context
+import android.os.AsyncTask
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -131,6 +132,9 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
 
         contactsAdapter!!.notifyDataSetChanged()
         selectedContactsAdapter!!.notifyDataSetChanged()
+        if (!removed) {
+            selectedContactsRecyclerView.scrollToPosition(selectedContacts.size - 1)
+        }
     }
 
     /**
@@ -190,19 +194,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
      * Loads the contacts into the view
      */
     fun loadContacts() {
-        val tempContacts = Contacts.getContacts(context)
-
-        tempContacts.mapTo(contacts) {
-            Pair(it, AtomicBoolean(false))
-        }
-
-        preSelectContacts()
-        hideContacts()
-
-        filteredContacts.addAll(contacts)
-
-        setUpContactsRecyclerView()
-        setUpSelectedContactsRecyclerView()
+        ContactsTask().execute()
     }
 
     /**
@@ -224,5 +216,26 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     override fun onSelectedContactPressed(contact: ContactBase) {
         selectedContacts.remove(contact) // always remove
         updateAdapters(contact, true)
+    }
+
+    inner class ContactsTask : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg p0: Void?): Void? {
+            val tempContacts = Contacts.getContacts(context)
+
+            tempContacts.mapTo(contacts) {
+                Pair(it, AtomicBoolean(false))
+            }
+
+            preSelectContacts()
+            hideContacts()
+
+            filteredContacts.addAll(contacts)
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            setUpContactsRecyclerView()
+            setUpSelectedContactsRecyclerView()
+        }
     }
 }
