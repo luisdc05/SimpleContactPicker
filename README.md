@@ -13,6 +13,24 @@ SimpleContactPicker is a library that lets shows a view that loads and allows th
 <img src="images/pic2.png" height="500px">
 <img src="images/pic3.png" height="500px">
 
+### Download
+1. Add the JitPack repository to your build file
+ ```javascript
+    allprojects {
+    	repositories {
+    		...
+    		maven { url "https://jitpack.io" }
+    	}
+    }
+```
+
+2. Add the SimpleContactPicker dependency
+```javascript
+dependencies {
+  compile 'com.github.luisdc05:SimpleContactPicker:v0.5.0'
+}
+```
+
 #### Todos
 
 - Allow for custom contacts to be injected (this can be useful if contacts come from a backend)
