@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity(), OnContactsReceived {
         setContentView(R.layout.activity_main)
 
         contactPicker = findViewById(R.id.picker)
-        val selected = arrayOf("6641195415")
-        val hidden = arrayOf("6643683773")
+        val selected = arrayOf("3214567845")
+        val hidden = arrayOf("2148794513")
         contactPicker.preselectedNumbers = selected
         contactPicker.hidden = hidden
         contactPicker.loadContacts(this)
