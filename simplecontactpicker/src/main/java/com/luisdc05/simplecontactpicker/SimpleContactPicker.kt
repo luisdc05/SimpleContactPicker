@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
+import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
 import java.text.Normalizer
@@ -193,8 +194,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     /**
      * Loads the contacts into the view
      */
-    fun loadContacts() {
-        ContactsTask().execute()
+    fun loadContacts(listener: OnContactsReceived?) {
+        ContactsTask(listener).execute()
     }
 
     /**
@@ -218,7 +219,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         updateAdapters(contact, true)
     }
 
-    inner class ContactsTask : AsyncTask<Void, Void, Void>() {
+    inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
 
@@ -236,6 +237,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         override fun onPostExecute(result: Void?) {
             setUpContactsRecyclerView()
             setUpSelectedContactsRecyclerView()
+            listener?.onReceived(contacts.map { it.first })
         }
     }
 }
