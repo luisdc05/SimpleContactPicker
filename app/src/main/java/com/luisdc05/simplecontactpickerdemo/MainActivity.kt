@@ -10,11 +10,13 @@ import com.luisdc05.simplecontactpicker.model.ContactBase
 
 class MainActivity : AppCompatActivity(), OnContactsReceived {
 
+    private lateinit var contactPicker: SimpleContactPicker
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val contactPicker = findViewById<SimpleContactPicker>(R.id.picker)
+        contactPicker = findViewById(R.id.picker)
         val selected = arrayOf("6641195415")
         val hidden = arrayOf("6643683773")
         contactPicker.preselectedNumbers = selected
@@ -25,6 +27,12 @@ class MainActivity : AppCompatActivity(), OnContactsReceived {
         button.setOnClickListener {
             Log.d("MAIN", contactPicker.selectedContacts.size.toString())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        contactPicker.updateContacts()
     }
 
     override fun onReceived(contacts: List<ContactBase>) {

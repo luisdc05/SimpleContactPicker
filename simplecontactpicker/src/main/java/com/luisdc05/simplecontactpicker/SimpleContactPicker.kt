@@ -131,11 +131,15 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
             item?.second?.set(true)
         }
 
-        contactsAdapter!!.notifyDataSetChanged()
-        selectedContactsAdapter!!.notifyDataSetChanged()
+        updateAdapters()
         if (!removed) {
             selectedContactsRecyclerView.scrollToPosition(selectedContacts.size - 1)
         }
+    }
+
+    private fun updateAdapters() {
+        contactsAdapter!!.notifyDataSetChanged()
+        selectedContactsAdapter!!.notifyDataSetChanged()
     }
 
     /**
@@ -198,6 +202,10 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         ContactsTask(listener).execute()
     }
 
+    fun updateContacts() {
+        UpdateContactsTask().execute()
+    }
+
     /**
      * Listener for when a contact is pressed
      */
@@ -238,6 +246,26 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
             setUpContactsRecyclerView()
             setUpSelectedContactsRecyclerView()
             listener?.onReceived(contacts.map { it.first })
+        }
+    }
+
+    inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg p0: Void?): Void? {
+            val tempContacts = Contacts.getContacts(context)
+            tempContacts.forEach { contact ->
+                if (contacts.none { it.first.numberOnly == contact.numberOnly }) {
+                    contacts.add(Pair(contact, AtomicBoolean(false)))
+                }
+            }
+
+            Contacts.orderContacts(contacts)
+
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            updateAdapters()
+            filter(searchInput.text.toString())
         }
     }
 }

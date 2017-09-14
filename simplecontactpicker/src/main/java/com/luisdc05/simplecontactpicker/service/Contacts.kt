@@ -5,6 +5,7 @@ import android.provider.ContactsContract
 import com.luisdc05.simplecontactpicker.model.AndroidContact
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
 
 /**
@@ -58,6 +59,12 @@ object Contacts {
     private fun orderByName(contacts: ArrayList<ContactBase>) {
         Collections.sort(contacts) { contact, t1 ->
             contact.name.compareTo(t1.name)
+        }
+    }
+
+    fun orderContacts(contacts: ArrayList<Pair<ContactBase, AtomicBoolean>>) {
+        Collections.sort(contacts) { (first1), (first) ->
+            first1.name.compareTo(first.name)
         }
     }
 
