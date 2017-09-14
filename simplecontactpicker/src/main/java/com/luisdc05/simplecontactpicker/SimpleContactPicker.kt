@@ -252,20 +252,39 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
-            tempContacts.forEach { contact ->
-                if (contacts.none { it.first.numberOnly == contact.numberOnly }) {
-                    contacts.add(Pair(contact, AtomicBoolean(false)))
-                }
-            }
-
+            removeContacts(tempContacts)
+            updateOrAddContacts(tempContacts)
+            removeSelectedContacts()
             Contacts.orderContacts(contacts)
-
             return null
         }
 
         override fun onPostExecute(result: Void?) {
             updateAdapters()
             filter(searchInput.text.toString())
+        }
+
+        private fun removeContacts(tempContacts: ArrayList<ContactBase>) {
+            contacts.removeAll { (first) -> tempContacts.none { it.numberOnly == first.numberOnly }}
+        }
+
+        private fun updateOrAddContacts(tempContacts: ArrayList<ContactBase>) {
+            tempContacts.forEach { contact ->
+                val index = contacts.indices.firstOrNull { contacts[it].first.numberOnly == contact.numberOnly }
+                if (index != null) {
+                    contacts[index] = Pair(contact, contacts[index].second)
+                } else {
+                    contacts.add(Pair(contact, AtomicBoolean(false)))
+                }
+            }
+        }
+
+        private fun removeSelectedContacts() {
+            selectedContacts.forEach { selected ->
+                if (contacts.none { selected.numberOnly == it.first.numberOnly }) {
+                    selectedContacts.remove(selected)
+                }
+            }
         }
     }
 }
