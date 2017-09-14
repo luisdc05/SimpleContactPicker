@@ -1,6 +1,6 @@
 # SimpleContactPicker
 
-SimpleContactPicker is a library that lets shows a view that loads and allows the user to select contacts from the android device.
+SimpleContactPicker is a library that shows a view that loads and allows the user to select contacts from the android device.
 
 ### Features
 
