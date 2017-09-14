@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
+import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
 import java.text.Normalizer
@@ -130,11 +131,15 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
             item?.second?.set(true)
         }
 
-        contactsAdapter!!.notifyDataSetChanged()
-        selectedContactsAdapter!!.notifyDataSetChanged()
+        updateAdapters()
         if (!removed) {
             selectedContactsRecyclerView.scrollToPosition(selectedContacts.size - 1)
         }
+    }
+
+    private fun updateAdapters() {
+        contactsAdapter!!.notifyDataSetChanged()
+        selectedContactsAdapter!!.notifyDataSetChanged()
     }
 
     /**
@@ -193,8 +198,12 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     /**
      * Loads the contacts into the view
      */
-    fun loadContacts() {
-        ContactsTask().execute()
+    fun loadContacts(listener: OnContactsReceived?) {
+        ContactsTask(listener).execute()
+    }
+
+    fun updateContacts() {
+        UpdateContactsTask().execute()
     }
 
     /**
@@ -218,7 +227,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         updateAdapters(contact, true)
     }
 
-    inner class ContactsTask : AsyncTask<Void, Void, Void>() {
+    inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
 
@@ -236,6 +245,46 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         override fun onPostExecute(result: Void?) {
             setUpContactsRecyclerView()
             setUpSelectedContactsRecyclerView()
+            listener?.onReceived(contacts.map { it.first })
+        }
+    }
+
+    inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg p0: Void?): Void? {
+            val tempContacts = Contacts.getContacts(context)
+            removeContacts(tempContacts)
+            updateOrAddContacts(tempContacts)
+            removeSelectedContacts()
+            Contacts.orderContacts(contacts)
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            updateAdapters()
+            filter(searchInput.text.toString())
+        }
+
+        private fun removeContacts(tempContacts: ArrayList<ContactBase>) {
+            contacts.removeAll { (first) -> tempContacts.none { it.numberOnly == first.numberOnly }}
+        }
+
+        private fun updateOrAddContacts(tempContacts: ArrayList<ContactBase>) {
+            tempContacts.forEach { contact ->
+                val index = contacts.indices.firstOrNull { contacts[it].first.numberOnly == contact.numberOnly }
+                if (index != null) {
+                    contacts[index] = Pair(contact, contacts[index].second)
+                } else {
+                    contacts.add(Pair(contact, AtomicBoolean(false)))
+                }
+            }
+        }
+
+        private fun removeSelectedContacts() {
+            selectedContacts.forEach { selected ->
+                if (contacts.none { selected.numberOnly == it.first.numberOnly }) {
+                    selectedContacts.remove(selected)
+                }
+            }
         }
     }
 }
