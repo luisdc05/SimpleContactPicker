@@ -233,7 +233,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         updateAdapters(contact, true)
     }
 
-    inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
+    private inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
 
@@ -255,7 +255,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         }
     }
 
-    inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+    private inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
             removeContacts(tempContacts)
