@@ -51,4 +51,8 @@ class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionLi
         // Do something when a contact is deselected
         Log.d(TAG, "A contact has been deselected")
     }
+
+    override fun beforeSelection(contact: ContactBase): Boolean {
+        return false
+    }
 }
