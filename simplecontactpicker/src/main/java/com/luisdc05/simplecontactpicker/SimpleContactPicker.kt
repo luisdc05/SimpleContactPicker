@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
+import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
@@ -33,6 +34,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     private var filteredContacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var preselectedNumbers: Array<String>? = null
     var hidden: Array<String>? = null
+
+    var selectionListener: ContactSelectionListener? = null
 
     private lateinit var contactsRecyclerView: RecyclerView
     private lateinit var selectedContactsRecyclerView: RecyclerView
@@ -213,8 +216,10 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         val removed = checkIfSelected(contact)
         if (removed) { // remove if it is selected
             selectedContacts.remove(contact)
+            selectionListener?.onContactDeselected(contact)
         } else { // add if not
             selectedContacts.add(contact)
+            selectionListener?.onContactSelected(contact)
         }
         updateAdapters(contact, removed)
     }
@@ -224,6 +229,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
      */
     override fun onSelectedContactPressed(contact: ContactBase) {
         selectedContacts.remove(contact) // always remove
+        selectionListener?.onContactDeselected(contact)
         updateAdapters(contact, true)
     }
 
