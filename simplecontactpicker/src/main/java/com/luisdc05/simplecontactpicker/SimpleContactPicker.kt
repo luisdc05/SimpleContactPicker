@@ -214,14 +214,18 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
      */
     override fun onContactPressed(contact: ContactBase) {
         val removed = checkIfSelected(contact)
-        if (removed) { // remove if it is selected
-            selectedContacts.removeAll { it.numberOnly == contact.numberOnly }
-            selectionListener?.onContactDeselected(contact)
-        } else { // add if not
-            selectedContacts.add(contact)
-            selectionListener?.onContactSelected(contact)
+        if (removed) {
+            deselectContact(contact)
+        } else {
+            if (selectionListener != null) {
+                if (selectionListener?.beforeSelection(contact) == true) {
+                    selectContact(contact)
+                }
+            } else {
+                selectContact(contact)
+            }
         }
-        updateAdapters(contact, removed)
+        updateAdapters()
     }
 
     /**
@@ -231,6 +235,39 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         selectedContacts.remove(contact) // always remove
         selectionListener?.onContactDeselected(contact)
         updateAdapters(contact, true)
+    }
+
+    /**
+     * Deselects a contact
+     */
+    private fun deselectContact(contact: ContactBase) {
+        selectedContacts.removeAll { it.numberOnly == contact.numberOnly }
+        updateContactList(contact, true)
+        selectionListener?.onContactDeselected(contact)
+    }
+
+    /**
+     * Selects a contact
+     */
+    private fun selectContact(contact: ContactBase) {
+        selectedContacts.add(contact)
+        updateContactList(contact, false)
+        selectionListener?.onContactSelected(contact)
+    }
+
+    /**
+     * Updates the contact and filtered contact lists
+     */
+    private fun updateContactList(contact: ContactBase, removed: Boolean) {
+        val contactItem = contacts.first { it.first.numberOnly == contact.numberOnly }
+        val filteredItem = filteredContacts.firstOrNull { it.first.numberOnly == contact.numberOnly }
+        if (removed) {
+            contactItem.second.set(false)
+            filteredItem?.second?.set(false)
+        } else {
+            contactItem.second.set(true)
+            filteredItem?.second?.set(true)
+        }
     }
 
     private inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
