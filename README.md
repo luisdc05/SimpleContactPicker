@@ -31,9 +31,48 @@ dependencies {
 }
 ```
 
+### Basic Usage
+1. Add the picker to your layout
+```xml
+<com.luisdc05.simplecontactpicker.SimpleContactPicker
+     android:id="@+id/picker"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+    />
+```
+
+2. When creating your activity/fragment call the loadContacts method
+```kotlin
+picker.loadContacts(null)
+```
+
+3. When you want to get the selected contacts call the selectedContacts property
+```kotlin
+picker.selectedContacts
+```
+
+#### Extra options
+1. You can set a list of preselected contacts by setting the preselectedNumbers property before calling the loadContacts method
+```kotlin
+val selected = arrayOf("3214567845")
+picker.preselectedNumbers = selected
+picker.loadContacts(null)
+```
+
+2. You can also hide contacts by setting the hidden property before calling the loadContacts method
+```kotlin
+val hidden = arrayOf("2148794513")
+picker.hidden = hidden
+picker.loadContacts(null)
+```
+
+3. If you want to do something after the contacts have been loaded you can implement the OnContactsReceived interface and send it as an argument in the loadContacts function. (See example)
+
+4. If you want to listen for each time a contact gets selected/deselected and do some logic before it gets selected to determine if the contact can be selected you can implement the ContactSelectionListener and set it to the selectionListener property. (See example)
+
+
 #### Todos
 
 - Allow for custom contacts to be injected (this can be useful if contacts come from a backend)
 - Allow to use custom views for selected and listed contacts
-- Allow to use a custom projection (right now it only loads mobile type contacts)
-- Load the contacts on the background
+- Allow to use a custom projection (right now it loads every type of contact)
