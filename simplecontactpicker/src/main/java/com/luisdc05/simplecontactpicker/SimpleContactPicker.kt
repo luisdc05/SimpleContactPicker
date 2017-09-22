@@ -280,7 +280,13 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
                 if (index != null) {
                     contacts[index] = Pair(contact, contacts[index].second)
                 } else {
-                    contacts.add(Pair(contact, AtomicBoolean(false)))
+                    if (hidden != null) {
+                        if (hidden?.none{ it == contact.numberOnly} == true) {
+                            contacts.add(Pair(contact, AtomicBoolean(false)))
+                        }
+                    } else {
+                        contacts.add(Pair(contact, AtomicBoolean(false)))
+                    }
                 }
             }
         }
