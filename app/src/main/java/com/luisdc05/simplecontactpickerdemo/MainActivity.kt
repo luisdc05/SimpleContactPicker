@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import com.luisdc05.simplecontactpicker.SimpleContactPicker
+import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.model.ContactBase
 
-class MainActivity : AppCompatActivity(), OnContactsReceived {
+class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionListener {
+    val TAG = "MAIN"
 
     private lateinit var contactPicker: SimpleContactPicker
 
@@ -22,10 +24,11 @@ class MainActivity : AppCompatActivity(), OnContactsReceived {
         contactPicker.preselectedNumbers = selected
         contactPicker.hidden = hidden
         contactPicker.loadContacts(this)
+        contactPicker.selectionListener = this
 
         val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            Log.d("MAIN", contactPicker.selectedContacts.size.toString())
+            Log.d(TAG, contactPicker.selectedContacts.size.toString())
         }
     }
 
@@ -37,5 +40,15 @@ class MainActivity : AppCompatActivity(), OnContactsReceived {
 
     override fun onReceived(contacts: List<ContactBase>) {
         // Do something when the contacts are loaded
+    }
+
+    override fun onContactSelected(contact: ContactBase) {
+        // Do something when a contact is selected
+        Log.d(TAG, "A contact has been selected")
+    }
+
+    override fun onContactDeselected(contact: ContactBase) {
+        // Do something when a contact is deselected
+        Log.d(TAG, "A contact has been deselected")
     }
 }

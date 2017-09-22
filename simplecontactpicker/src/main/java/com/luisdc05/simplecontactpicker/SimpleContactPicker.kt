@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
+import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
@@ -33,6 +34,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     private var filteredContacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var preselectedNumbers: Array<String>? = null
     var hidden: Array<String>? = null
+
+    var selectionListener: ContactSelectionListener? = null
 
     private lateinit var contactsRecyclerView: RecyclerView
     private lateinit var selectedContactsRecyclerView: RecyclerView
@@ -212,9 +215,11 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     override fun onContactPressed(contact: ContactBase) {
         val removed = checkIfSelected(contact)
         if (removed) { // remove if it is selected
-            selectedContacts.remove(contact)
+            selectedContacts.removeAll { it.numberOnly == contact.numberOnly }
+            selectionListener?.onContactDeselected(contact)
         } else { // add if not
             selectedContacts.add(contact)
+            selectionListener?.onContactSelected(contact)
         }
         updateAdapters(contact, removed)
     }
@@ -224,10 +229,11 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
      */
     override fun onSelectedContactPressed(contact: ContactBase) {
         selectedContacts.remove(contact) // always remove
+        selectionListener?.onContactDeselected(contact)
         updateAdapters(contact, true)
     }
 
-    inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
+    private inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
 
@@ -249,7 +255,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         }
     }
 
-    inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+    private inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
             removeContacts(tempContacts)
@@ -274,7 +280,13 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
                 if (index != null) {
                     contacts[index] = Pair(contact, contacts[index].second)
                 } else {
-                    contacts.add(Pair(contact, AtomicBoolean(false)))
+                    if (hidden != null) {
+                        if (hidden?.none{ it == contact.numberOnly} == true) {
+                            contacts.add(Pair(contact, AtomicBoolean(false)))
+                        }
+                    } else {
+                        contacts.add(Pair(contact, AtomicBoolean(false)))
+                    }
                 }
             }
         }
