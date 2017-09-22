@@ -215,7 +215,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     override fun onContactPressed(contact: ContactBase) {
         val removed = checkIfSelected(contact)
         if (removed) { // remove if it is selected
-            selectedContacts.remove(contact)
+            selectedContacts.removeAll { it.numberOnly == contact.numberOnly }
             selectionListener?.onContactDeselected(contact)
         } else { // add if not
             selectedContacts.add(contact)
