@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.luisdc05.simplecontactpicker.R
+import com.luisdc05.simplecontactpicker.misc.ImageLoader
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -37,10 +38,21 @@ class ContactsAdapter(private val list: ArrayList<Pair<ContactBase, AtomicBoolea
         holder.container.setOnClickListener {
             listener.onContactPressed(item.first)
         }
+
+        loadImage(item.first.imagePath, holder.avatar)
     }
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    private fun loadImage(path: String?, view: ImageView) {
+        if (path != null) {
+            ImageLoader.loadImagePath(context, path, R.drawable.avatar_placeholder, view)
+            return
+        }
+
+        ImageLoader.loadDrawable(context, R.drawable.avatar_placeholder, view)
     }
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
