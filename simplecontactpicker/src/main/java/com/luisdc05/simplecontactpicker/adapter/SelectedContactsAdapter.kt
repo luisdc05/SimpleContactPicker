@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.luisdc05.simplecontactpicker.R
+import com.luisdc05.simplecontactpicker.misc.ImageLoader
 import com.luisdc05.simplecontactpicker.model.ContactBase
 
 /**
@@ -29,6 +30,8 @@ class SelectedContactsAdapter (private val list: ArrayList<ContactBase>, private
         holder.container.setOnClickListener {
             listener.onSelectedContactPressed(item)
         }
+
+        loadImage(item.imagePath, holder.image)
     }
 
 
@@ -36,6 +39,14 @@ class SelectedContactsAdapter (private val list: ArrayList<ContactBase>, private
         return list.size
     }
 
+    private fun loadImage(path: String?, view: ImageView) {
+        if (path != null) {
+            ImageLoader.loadImagePath(context, path, R.drawable.avatar_placeholder, view)
+            return
+        }
+
+        ImageLoader.loadDrawable(context, R.drawable.avatar_placeholder, view)
+    }
 
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {

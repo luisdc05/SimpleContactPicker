@@ -53,6 +53,6 @@ class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionLi
     }
 
     override fun beforeSelection(contact: ContactBase): Boolean {
-        return false
+        return true
     }
 }
