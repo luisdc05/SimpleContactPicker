@@ -1,7 +1,9 @@
 package com.luisdc05.simplecontactpicker
 
+import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -15,6 +17,7 @@ import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
+import com.luisdc05.simplecontactpicker.misc.SoftKeyboard
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
 import java.text.Normalizer
@@ -34,6 +37,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     private var filteredContacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var preselectedNumbers: Array<String>? = null
     var hidden: Array<String>? = null
+    var hideKeyboardOnAction = true
 
     var selectionListener: ContactSelectionListener? = null
 
@@ -94,6 +98,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         contactsRecyclerView.layoutManager = llm
         contactsAdapter = ContactsAdapter(filteredContacts, context, this)
         contactsRecyclerView.adapter = contactsAdapter!!
+        contactsRecyclerView.addOnScrollListener(ScrollListener())
     }
 
     /**
@@ -105,6 +110,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         selectedContactsRecyclerView.layoutManager = llm
         selectedContactsAdapter = SelectedContactsAdapter(selectedContacts, context, this)
         selectedContactsRecyclerView.adapter = selectedContactsAdapter!!
+        contactsRecyclerView.addOnScrollListener(ScrollListener())
     }
 
     /**
@@ -121,21 +127,9 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         searchInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0)
     }
 
-    /**
-     * Updates the adapters
-     */
-    private fun updateAdapters(contact: ContactBase, removed: Boolean) {
-        val item = filteredContacts.firstOrNull { it.first.numberOnly == contact.numberOnly }
-        if (removed) {
-            contacts.first { it.first.numberOnly == contact.numberOnly}.second.set(false)
-            item?.second?.set(false)
-        } else {
-            contacts.first { it.first.numberOnly == contact.numberOnly }.second.set(true)
-            item?.second?.set(true)
-        }
-
+    private fun updateAdapters(added: Boolean) {
         updateAdapters()
-        if (!removed) {
+        if (added) {
             selectedContactsRecyclerView.scrollToPosition(selectedContacts.size - 1)
         }
     }
@@ -225,16 +219,17 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
                 selectContact(contact)
             }
         }
-        updateAdapters()
+        updateAdapters(!removed)
+        hideKeyboard()
     }
 
     /**
      * Listener for when a selected contract is pressed
      */
     override fun onSelectedContactPressed(contact: ContactBase) {
-        selectedContacts.remove(contact) // always remove
-        selectionListener?.onContactDeselected(contact)
-        updateAdapters(contact, true)
+        deselectContact(contact)
+        updateAdapters(false)
+        hideKeyboard()
     }
 
     /**
@@ -269,6 +264,23 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
             filteredItem?.second?.set(true)
         }
     }
+
+    private fun hideKeyboard() {
+        if (hideKeyboardOnAction) {
+            if (context is AppCompatActivity) {
+                SoftKeyboard.hideKeyboard(context as AppCompatActivity)
+            } else if (context is Activity) {
+                SoftKeyboard.hideKeyboard(context as Activity)
+            }
+        }
+    }
+
+    private inner class ScrollListener : RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+            hideKeyboard()
+        }
+    }
+
 
     private inner class ContactsTask(private val listener: OnContactsReceived?) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg p0: Void?): Void? {
