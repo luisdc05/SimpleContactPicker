@@ -6,21 +6,50 @@
     android:layout_height="match_parent"
     tools:context="com.luisdc05.simplecontactpickerdemo.MainActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <com.luisdc05.simplecontactpicker.PickedContacts
+            android:id="@+id/picked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/searchContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/picked"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:hint="@string/search">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone|flagNoExtractUi"
+                android:inputType="text"
+                android:maxLines="1" />
+
+        </android.support.design.widget.TextInputLayout>
+
 
         <com.luisdc05.simplecontactpicker.SimpleContactPicker
             android:id="@+id/picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/searchContent"
             />
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Get"/>
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="Get"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
