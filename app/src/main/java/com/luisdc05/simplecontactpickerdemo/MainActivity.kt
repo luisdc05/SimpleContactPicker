@@ -13,9 +13,10 @@ import com.luisdc05.simplecontactpicker.PickedContacts
 import com.luisdc05.simplecontactpicker.SimpleContactPicker
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
+import com.luisdc05.simplecontactpicker.misc.OnContactsUpdated
 import com.luisdc05.simplecontactpicker.model.ContactBase
 
-class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionListener {
+class MainActivity : AppCompatActivity(), OnContactsReceived, OnContactsUpdated, ContactSelectionListener {
     val TAG = "MAIN"
 
     private lateinit var contactPicker: SimpleContactPicker
@@ -73,11 +74,15 @@ class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionLi
     override fun onResume() {
         super.onResume()
 
-        contactPicker.updateContacts()
+        contactPicker.updateContacts(this)
     }
 
     override fun onReceived(contacts: List<ContactBase>) {
         // Do something when the contacts are loaded
+        Log.d(TAG, contactPicker.contacts.size.toString())
+    }
+
+    override fun onContactsUpdated() {
         Log.d(TAG, contactPicker.contacts.size.toString())
     }
 
