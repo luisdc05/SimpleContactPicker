@@ -229,6 +229,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
     }
 
     private inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+        val removedContacts = ArrayList<ContactBase>()
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
             removeContacts(tempContacts)
@@ -240,7 +241,9 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
 
         override fun onPostExecute(result: Void?) {
             updateAdapter()
-//            filter(searchInput.text.toString())
+            filter(filterCriteria)
+            removedContacts.forEach { pickedContactsView.removeContact(it) }
+            removedContacts.clear()
         }
 
         private fun removeContacts(tempContacts: ArrayList<ContactBase>) {
@@ -267,7 +270,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
         private fun removeSelectedContacts() {
             selectedContacts.forEach { selected ->
                 if (contacts.none { selected.numberOnly == it.first.numberOnly }) {
-                    pickedContactsView.removeContact(selected)
+                    removedContacts.add(selected)
                 }
             }
         }
