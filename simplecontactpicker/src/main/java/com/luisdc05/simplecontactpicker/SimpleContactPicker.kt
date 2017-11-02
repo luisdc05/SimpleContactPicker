@@ -73,6 +73,13 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
         return selectedContacts.any { it.numberOnly ==  contact.numberOnly}
     }
 
+    fun select(id: String) {
+        val contact = contacts.firstOrNull { it.first.id == id }
+        if (contact != null) {
+            onContactPressed(contact.first)
+        }
+    }
+
     /**
      * PreSelects the contacts if the preselected contacts array was provided
      */
