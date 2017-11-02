@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
+import com.luisdc05.simplecontactpicker.misc.OnContactsUpdated
 import com.luisdc05.simplecontactpicker.misc.SoftKeyboard
 import com.luisdc05.simplecontactpicker.model.ContactBase
 import com.luisdc05.simplecontactpicker.service.Contacts
@@ -134,8 +135,8 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
         ContactsTask(listener).execute()
     }
 
-    fun updateContacts() {
-        UpdateContactsTask().execute()
+    fun updateContacts(listener: OnContactsUpdated?) {
+        UpdateContactsTask(listener).execute()
     }
 
     /**
@@ -228,7 +229,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
         }
     }
 
-    private inner class UpdateContactsTask : AsyncTask<Void, Void, Void>() {
+    private inner class UpdateContactsTask(private val listener: OnContactsUpdated?) : AsyncTask<Void, Void, Void>() {
         val removedContacts = ArrayList<ContactBase>()
         override fun doInBackground(vararg p0: Void?): Void? {
             val tempContacts = Contacts.getContacts(context)
@@ -244,6 +245,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
             filter(filterCriteria)
             removedContacts.forEach { pickedContactsView.removeContact(it) }
             removedContacts.clear()
+            listener?.onContactsUpdated()
         }
 
         private fun removeContacts(tempContacts: ArrayList<ContactBase>) {
