@@ -3,16 +3,9 @@ package com.luisdc05.simplecontactpicker
 import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.widget.EditText
-import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
@@ -25,9 +18,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Created by user1 on 8/25/17.
  */
-class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
+class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
 
-    private var contactsAdapter: ContactsAdapter? = null
+    private val contactsAdapter: ContactsAdapter by lazy { createAdapter() }
 
     private lateinit var pickedContactsView: PickedContacts
 
@@ -44,62 +37,24 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
 
     var selectionListener: ContactSelectionListener? = null
 
-    private lateinit var contactsRecyclerView: RecyclerView
-    private lateinit var searchInput: EditText
+    private var filterCriteria = ""
 
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
-        orientation = LinearLayout.VERTICAL
-
-        LayoutInflater.from(context).inflate(R.layout.contact_picker, this, true)
-
-        searchInput = getChildAt(0).findViewById(R.id.search)
-        contactsRecyclerView = getChildAt(1) as RecyclerView
-        setUpSearchInput()
+        initialize()
     }
 
-    /**
-     * Sets up the search input
-     */
-    private fun setUpSearchInput() {
-        showSearchIcon()
-        searchInput.setOnTouchListener { view, motionEvent ->
-            val DRAWABLE_RIGHT = 2
-            if (motionEvent.action == MotionEvent.ACTION_UP) {
-                if (motionEvent.rawX >= (searchInput.right - searchInput.compoundDrawables[DRAWABLE_RIGHT].getBounds().width())) {
-                    searchInput.setText("")
-                }
-            }
-            false
-        }
-        searchInput.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                val text = searchInput.text.toString()
-                if (text == "") {
-                    showSearchIcon()
-                } else {
-                    showClearIcon()
-                }
-                filter(text)
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-        })
-    }
-
-    /**
-     * Sets up the contacts recycler view
-     */
-    private fun setUpContactsRecyclerView() {
+    private fun initialize() {
         val llm = LinearLayoutManager(context)
         llm.orientation = LinearLayoutManager.VERTICAL
-        contactsRecyclerView.layoutManager = llm
-        contactsAdapter = ContactsAdapter(filteredContacts, context, this)
-        contactsRecyclerView.adapter = contactsAdapter!!
-        contactsRecyclerView.addOnScrollListener(ScrollListener())
+        layoutManager = llm
+        adapter = contactsAdapter
+        addOnScrollListener(ScrollListener())
+    }
+
+    private fun createAdapter(): ContactsAdapter {
+        return ContactsAdapter(filteredContacts, context, this)
     }
 
     fun attachPickedContactsView(view: PickedContacts) {
@@ -107,22 +62,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
         pickedContactsView.contactPicker = this
     }
 
-    /**
-     * Shows the clear icon in the search input
-     */
-    private fun showClearIcon() {
-        searchInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete, 0)
-    }
-
-    /**
-     * Shows the search icon in the search input
-     */
-    private fun showSearchIcon() {
-        searchInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0)
-    }
-
     private fun updateAdapter() {
-        contactsAdapter!!.notifyDataSetChanged()
+        contactsAdapter.notifyDataSetChanged()
     }
 
     /**
@@ -158,7 +99,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
     /**
      * Filters the contacts with the given criteria if it matches the name or the number of the contact
      */
-    private fun filter(criteria: String) {
+    fun filter(criteria: String) {
+        filterCriteria = criteria
         val normalizedCriteria = Normalizer.
                 normalize(criteria, Normalizer.Form.NFD).
                 replace(Regex("\\p{InCOMBINING_DIACRITICAL_MARKS}+"), "").toLowerCase()
@@ -175,7 +117,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
             }
         }
 
-        contactsAdapter?.notifyDataSetChanged()
+        contactsAdapter.notifyDataSetChanged()
     }
 
     /**
@@ -246,9 +188,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
 
     private fun hideKeyboard() {
         if (hideKeyboardOnAction) {
-            if (context is AppCompatActivity) {
-                SoftKeyboard.hideKeyboard(context as AppCompatActivity)
-            } else if (context is Activity) {
+            if (context is Activity) {
                 SoftKeyboard.hideKeyboard(context as Activity)
             }
         }
@@ -277,7 +217,6 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
         }
 
         override fun onPostExecute(result: Void?) {
-            setUpContactsRecyclerView()
             listener?.onReceived(contacts.map { it.first })
         }
     }
@@ -294,7 +233,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
 
         override fun onPostExecute(result: Void?) {
             updateAdapter()
-            filter(searchInput.text.toString())
+//            filter(searchInput.text.toString())
         }
 
         private fun removeContacts(tempContacts: ArrayList<ContactBase>) {

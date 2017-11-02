@@ -2,7 +2,6 @@ package com.luisdc05.simplecontactpicker
 
 import android.app.Activity
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -47,9 +46,7 @@ class PickedContacts: RecyclerView, SelectedContactsAdapter.SelectedContactsList
 
     private fun hideKeyboard() {
         if (contactPicker.hideKeyboardOnAction) {
-            if (context is AppCompatActivity) {
-                SoftKeyboard.hideKeyboard(context as AppCompatActivity)
-            } else if (context is Activity) {
+            if (context is Activity) {
                 SoftKeyboard.hideKeyboard(context as Activity)
             }
         }
