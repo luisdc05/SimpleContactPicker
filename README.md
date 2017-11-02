@@ -32,8 +32,15 @@ dependencies {
 ```
 
 ### Basic Usage
-1. Add the picker to your layout
+1. Add the contact picker and picked contacts views to your layout
 ```xml
+
+<com.luisdc05.simplecontactpicker.PickedContacts
+     android:id="@+id/picked"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content" 
+     />
+
 <com.luisdc05.simplecontactpicker.SimpleContactPicker
      android:id="@+id/picker"
      android:layout_width="match_parent"
@@ -41,12 +48,17 @@ dependencies {
     />
 ```
 
-2. When creating your activity/fragment call the loadContacts method
+2. Attach the picked contacts view to the contact picker
+```kotlin
+picker.attachPickedContactsView(pickedContactsView)
+```
+
+3. When creating your activity/fragment call the loadContacts method
 ```kotlin
 picker.loadContacts(null)
 ```
 
-3. When you want to get the selected contacts call the selectedContacts property
+4. When you want to get the selected contacts call the selectedContacts property
 ```kotlin
 picker.selectedContacts
 ```
