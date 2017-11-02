@@ -11,6 +11,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <com.luisdc05.simplecontactpicker.PickedContacts
+            android:id="@+id/picked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <com.luisdc05.simplecontactpicker.SimpleContactPicker
             android:id="@+id/picker"
             android:layout_width="match_parent"

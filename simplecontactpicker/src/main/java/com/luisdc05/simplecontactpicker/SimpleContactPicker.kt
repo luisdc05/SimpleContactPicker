@@ -14,7 +14,6 @@ import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.luisdc05.simplecontactpicker.adapter.ContactsAdapter
-import com.luisdc05.simplecontactpicker.adapter.SelectedContactsAdapter
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
 import com.luisdc05.simplecontactpicker.misc.SoftKeyboard
@@ -26,14 +25,18 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Created by user1 on 8/25/17.
  */
-class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, SelectedContactsAdapter.SelectedContactsListener {
+class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener {
 
     private var contactsAdapter: ContactsAdapter? = null
-    private var selectedContactsAdapter: SelectedContactsAdapter? = null
 
-    private var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
-    var selectedContacts = ArrayList<ContactBase>()
+    private lateinit var pickedContactsView: PickedContacts
+
+    internal var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
+    var selectedContacts: ArrayList<ContactBase> = ArrayList()
         private set
+        get() {
+            return pickedContactsView.selectedContacts
+        }
     private var filteredContacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var preselectedNumbers: Array<String>? = null
     var hidden: Array<String>? = null
@@ -42,7 +45,6 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     var selectionListener: ContactSelectionListener? = null
 
     private lateinit var contactsRecyclerView: RecyclerView
-    private lateinit var selectedContactsRecyclerView: RecyclerView
     private lateinit var searchInput: EditText
 
     constructor(context: Context) : super(context)
@@ -52,9 +54,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
 
         LayoutInflater.from(context).inflate(R.layout.contact_picker, this, true)
 
-        searchInput = getChildAt(1).findViewById(R.id.search)
-        contactsRecyclerView = getChildAt(2) as RecyclerView
-        selectedContactsRecyclerView = getChildAt(0) as RecyclerView
+        searchInput = getChildAt(0).findViewById(R.id.search)
+        contactsRecyclerView = getChildAt(1) as RecyclerView
         setUpSearchInput()
     }
 
@@ -101,16 +102,9 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         contactsRecyclerView.addOnScrollListener(ScrollListener())
     }
 
-    /**
-     * Set ups the selected contacts recycler view
-     */
-    private fun setUpSelectedContactsRecyclerView() {
-        val llm = LinearLayoutManager(context)
-        llm.orientation = LinearLayoutManager.HORIZONTAL
-        selectedContactsRecyclerView.layoutManager = llm
-        selectedContactsAdapter = SelectedContactsAdapter(selectedContacts, context, this)
-        selectedContactsRecyclerView.adapter = selectedContactsAdapter!!
-        contactsRecyclerView.addOnScrollListener(ScrollListener())
+    fun attachPickedContactsView(view: PickedContacts) {
+        pickedContactsView = view
+        pickedContactsView.contactPicker = this
     }
 
     /**
@@ -127,16 +121,8 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         searchInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0)
     }
 
-    private fun updateAdapters(added: Boolean) {
-        updateAdapters()
-        if (added) {
-            selectedContactsRecyclerView.scrollToPosition(selectedContacts.size - 1)
-        }
-    }
-
-    private fun updateAdapters() {
+    private fun updateAdapter() {
         contactsAdapter!!.notifyDataSetChanged()
-        selectedContactsAdapter!!.notifyDataSetChanged()
     }
 
     /**
@@ -155,7 +141,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
                 val numberOnly = first.numberOnly
                 if (number == numberOnly) {
                     second.set(true)
-                    selectedContacts.add(first)
+                    pickedContactsView.addContact(first)
                     break
                 }
             }
@@ -209,6 +195,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
     override fun onContactPressed(contact: ContactBase) {
         val removed = checkIfSelected(contact)
         if (removed) {
+            pickedContactsView.removeContact(contact)
             deselectContact(contact)
         } else {
             if (selectionListener != null) {
@@ -219,25 +206,17 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
                 selectContact(contact)
             }
         }
-        updateAdapters(!removed)
-        hideKeyboard()
-    }
-
-    /**
-     * Listener for when a selected contract is pressed
-     */
-    override fun onSelectedContactPressed(contact: ContactBase) {
-        deselectContact(contact)
-        updateAdapters(false)
+        updateAdapter()
         hideKeyboard()
     }
 
     /**
      * Deselects a contact
      */
-    private fun deselectContact(contact: ContactBase) {
-        selectedContacts.removeAll { it.numberOnly == contact.numberOnly }
+    internal fun deselectContact(contact: ContactBase) {
         updateContactList(contact, true)
+        updateAdapter()
+        hideKeyboard()
         selectionListener?.onContactDeselected(contact)
     }
 
@@ -245,7 +224,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
      * Selects a contact
      */
     private fun selectContact(contact: ContactBase) {
-        selectedContacts.add(contact)
+        pickedContactsView.addContact(contact)
         updateContactList(contact, false)
         selectionListener?.onContactSelected(contact)
     }
@@ -299,7 +278,6 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
 
         override fun onPostExecute(result: Void?) {
             setUpContactsRecyclerView()
-            setUpSelectedContactsRecyclerView()
             listener?.onReceived(contacts.map { it.first })
         }
     }
@@ -315,7 +293,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         }
 
         override fun onPostExecute(result: Void?) {
-            updateAdapters()
+            updateAdapter()
             filter(searchInput.text.toString())
         }
 
@@ -343,7 +321,7 @@ class SimpleContactPicker : LinearLayout, ContactsAdapter.ContactsListener, Sele
         private fun removeSelectedContacts() {
             selectedContacts.forEach { selected ->
                 if (contacts.none { selected.numberOnly == it.first.numberOnly }) {
-                    selectedContacts.remove(selected)
+                    pickedContactsView.removeContact(selected)
                 }
             }
         }

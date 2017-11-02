@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import com.luisdc05.simplecontactpicker.PickedContacts
 import com.luisdc05.simplecontactpicker.SimpleContactPicker
 import com.luisdc05.simplecontactpicker.misc.ContactSelectionListener
 import com.luisdc05.simplecontactpicker.misc.OnContactsReceived
@@ -13,14 +14,17 @@ class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionLi
     val TAG = "MAIN"
 
     private lateinit var contactPicker: SimpleContactPicker
+    private lateinit var pickedContacts: PickedContacts
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         contactPicker = findViewById(R.id.picker)
+        pickedContacts = findViewById(R.id.picked)
         val selected = arrayOf("3214567845")
         val hidden = arrayOf("2148794513")
+        contactPicker.attachPickedContactsView(pickedContacts)
         contactPicker.preselectedNumbers = selected
         contactPicker.hidden = hidden
         contactPicker.loadContacts(this)
