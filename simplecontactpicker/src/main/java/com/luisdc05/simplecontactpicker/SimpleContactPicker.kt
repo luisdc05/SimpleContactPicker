@@ -24,7 +24,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
 
     private lateinit var pickedContactsView: PickedContacts
 
-    internal var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
+    var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var selectedContacts: ArrayList<ContactBase> = ArrayList()
         private set
         get() {
@@ -71,6 +71,13 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
      */
     private fun checkIfSelected(contact: ContactBase): Boolean {
         return selectedContacts.any { it.numberOnly ==  contact.numberOnly}
+    }
+
+    fun select(id: String) {
+        val contact = contacts.firstOrNull { it.first.id == id }
+        if (contact != null) {
+            onContactPressed(contact.first)
+        }
     }
 
     /**

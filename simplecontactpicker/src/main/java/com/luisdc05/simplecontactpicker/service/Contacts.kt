@@ -33,7 +33,7 @@ object Contacts {
             val imageUri = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
             val name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
             val rawPhoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-            result.add(AndroidContact(rawPhoneNumber, name,typeLabel, imageUri))
+            result.add(AndroidContact(rawPhoneNumber, name, typeLabel, numberId, imageUri))
         }
         phones.close()
         result = removeDuplicates(result)

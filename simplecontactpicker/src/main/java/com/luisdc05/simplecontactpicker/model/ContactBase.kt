@@ -5,7 +5,7 @@ import java.text.Normalizer
 /**
  * Created by user1 on 8/25/17.
  */
-abstract class ContactBase constructor(val mobileNumber: String, val name: String, val numberType: String, val imagePath: String?) {
+abstract class ContactBase constructor(val mobileNumber: String, val name: String, val numberType: String, val id: String, val imagePath: String?) {
     var searchName: String
         private set
 

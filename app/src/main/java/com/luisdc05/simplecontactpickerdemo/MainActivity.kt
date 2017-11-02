@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity(), OnContactsReceived, ContactSelectionLi
 
     override fun onReceived(contacts: List<ContactBase>) {
         // Do something when the contacts are loaded
+        Log.d(TAG, contactPicker.contacts.size.toString())
     }
 
     override fun onContactSelected(contact: ContactBase) {
