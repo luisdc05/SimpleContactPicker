@@ -24,7 +24,7 @@ class SimpleContactPicker : RecyclerView, ContactsAdapter.ContactsListener {
 
     private lateinit var pickedContactsView: PickedContacts
 
-    internal var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
+    var contacts = ArrayList<Pair<ContactBase, AtomicBoolean>>()
     var selectedContacts: ArrayList<ContactBase> = ArrayList()
         private set
         get() {
